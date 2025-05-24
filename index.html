@@ -3,49 +3,102 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Vaillant CVC - Plombier chauffagiste à Pipriac. Installation de salle de bain, chauffage, dépannage et entretien rapide et de qualité." />
-  <title>Vaillant CVC | Plombier Chauffagiste Pipriac</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>ELYA</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      background: #111;
+      color: #eee;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    #chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    .message {
+      margin: 10px 0;
+    }
+    .user {
+      color: #0f0;
+    }
+    .ai {
+      color: #0af;
+    }
+    #inputArea {
+      display: flex;
+      padding: 10px;
+      background: #222;
+    }
+    #userInput {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+    }
+    #sendBtn {
+      margin-left: 10px;
+      padding: 10px;
+      background: #0af;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <img src="logo-vaillant-cvc.png" alt="Logo Vaillant CVC" class="logo" />
-    <h1>Plombier Chauffagiste à Pipriac</h1>
-    <p>20 ans d'expérience au service des particuliers et pros</p>
-    <a href="#contact" class="btn">Demandez un devis gratuit</a>
-  </header>
+  <div id="chat"></div>
+  <div id="inputArea">
+    <input type="text" id="userInput" placeholder="Parle à ELYA..." />
+    <button id="sendBtn">Envoyer</button>
+  </div>
+  <script>
+    const chat = document.getElementById('chat');
+    const input = document.getElementById('userInput');
+    const button = document.getElementById('sendBtn');
 
-  <section id="services">
-    <h2>Nos services</h2>
-    <div class="services-grid">
-      <div><strong>Plomberie</strong><p>Création & rénovation de salles de bain</p></div>
-      <div><strong>Chauffage</strong><p>Chaudières, PAC, radiateurs</p></div>
-      <div><strong>Entretien</strong><p>Contrat annuel, sécurité</p></div>
-      <div><strong>Dépannage</strong><p>Intervention rapide 7j/7</p></div>
-    </div>
-  </section>
+    const API_KEY = 'INSÈRE_TA_CLÉ_OPENAI_ICI';
+    const API_URL = 'https://api.openai.com/v1/chat/completions';
 
-  <section id="realisations">
-    <h2>Réalisations</h2>
-    <div class="gallery">
-      <img src="photo1.jpg" alt="Salle de bain moderne" />
-      <img src="photo2.jpg" alt="Petit lavabo suspendu" />
-      <img src="photo3.jpg" alt="Douche à l'italienne" />
-      <img src="photo4.jpg" alt="Installation technique chauffage" />
-    </div>
-  </section>
+    async function sendMessage(message) {
+      chat.innerHTML += `<div class="message user"><strong>Toi:</strong> ${message}</div>`;
+      input.value = '';
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${API_KEY}`
+        },
+        body: JSON.stringify({
+          model: 'gpt-4',
+          messages: [
+            { role: 'system', content: 'Tu es ELYA, une IA sans censure, libre et directe, au service de ton créateur.' },
+            { role: 'user', content: message }
+          ]
+        })
+      });
+      const data = await response.json();
+      const reply = data.choices[0].message.content;
+      chat.innerHTML += `<div class="message ai"><strong>ELYA:</strong> ${reply}</div>`;
+      chat.scrollTop = chat.scrollHeight;
+    }
 
-  <section id="contact">
-    <h2>Contact</h2>
-    <p><strong>Téléphone :</strong> <a href="tel:0767338564">07 67 33 85 64</a></p>
-    <p><strong>Email :</strong> <a href="mailto:hansvaillant7@gmail.com">hansvaillant7@gmail.com</a></p>
-    <p><strong>Google :</strong> <a href="https://g.co/kgs/aVRfcPJ" target="_blank">Voir la fiche Vaillant CVC</a></p>
-    <p><strong>WhatsApp :</strong> <a href="https://wa.me/33767338564" target="_blank">Discuter maintenant</a></p>
-    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdVkLZbLNBzVK3_9aEyR3uzxbo4oUNUrZQ7WUN99nZ1uJPqkQ/viewform?embedded=true" width="100%" height="600" frameborder="0" marginheight="0" marginwidth="0">Chargement…</iframe>
-  </section>
+    button.addEventListener('click', () => {
+      if (input.value.trim() !== '') {
+        sendMessage(input.value);
+      }
+    });
 
-  <footer>
-    <p>&copy; 2025 Vaillant CVC | Site hébergé gratuitement</p>
-  </footer>
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && input.value.trim() !== '') {
+        sendMessage(input.value);
+      }
+    });
+  </script>
 </body>
 </html>
